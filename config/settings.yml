@@ -2,12 +2,12 @@ defaults: &defaults
  
 :development:
   :couchdb:
-    :url: http://localhost:5984/worddit
+    :url: http://localhost:5984/worddit_production
   <<: *defaults
   
 :test:
   :couchdb:
-    :url: http://localhost:5984/worddit
+    :url: http://localhost:5984/worddit_test
     <<: *defaults
 
 :production:

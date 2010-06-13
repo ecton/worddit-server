@@ -23,8 +23,7 @@ end
 # Connect to couchdb.
 @entities = []
 couchdb_url = settings(:couchdb)[:url]
-COUCHDB_SERVER = CouchRest.database!(couchdb_url)
-
+WORDDITDB = CouchRest.database!(couchdb_url)
 
 # Load all application files.
 Dir[root_path("app/**/*.rb")].each do |file|
