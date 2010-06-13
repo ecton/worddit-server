@@ -82,14 +82,14 @@ class Main
       return {
         :id => found_user.id,
         :email => found_user.email,
-        :nickname => found_user.nickname
+        :nickname => found_user.nickname,
         :avatar_url => found_user.avatar_url
       }.to_json
     else
       # These users aren't connected, only reveal public information
       return {
         :id => found_user.id,
-        :nickname => found_user.nickname
+        :nickname => found_user.nickname,
         :avatar_url => found_user.avatar_url
       }.to_json
     end
