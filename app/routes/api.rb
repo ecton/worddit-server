@@ -149,6 +149,10 @@ class Main
   post "/game/new" do
     
   end
+
+  post "/game/request" do
+
+  end
   
   get "/game/:id/accept" do
     
@@ -187,10 +191,34 @@ class Main
   end
   
   get "/game/:id/chat/history/:limit" do
+    user = User.by_auth_token(:key => request.cookies['auth']).first
+    halt 403 if user.nil?
     
+    game = Game.get(params[:id])
+    halt 404 if game.nil?
+    
+    halt 403 unless game.players.any?{|p| p.user_id == user.id}
+    
+    date = Time.parse(params[:limit]) unless params[:limit] == 'all'
+    messages = game.messages
+    messages = messages.reject{|m| m.date < date} unless date.nil?
+    return messages.to_json
   end
   
   post "/game/:id/chat/send" do
-     
+    user = User.by_auth_token(:key => request.cookies['auth']).first
+    halt 403 if user.nil?
+    
+    game = Game.get(params[:id])
+    halt 404 if game.nil?
+    
+    halt 403 unless game.players.any?{|p| p.user_id == user.id}
+    
+    message = GameMessage.new()
+    message.user_id = user.id
+    message.date = Time.now
+    message.message = params[:message]
+    game.messages << message
+    game.save
   end
 end
