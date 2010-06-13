@@ -27,6 +27,7 @@ class GamePlayer < Hash
   
   property :user_id
   property :score
+  property :status # invited, playing, declined
   property :rack, :cast_as => ['GameTile']
 end
 
