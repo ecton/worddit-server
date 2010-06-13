@@ -208,7 +208,6 @@ class Main
   post "/game/:id/chat/send" do
     user = User.by_auth_token(:key => request.cookies['auth']).first
     halt 403 if user.nil?
-    
     game = Game.get(params[:id])
     halt 404 if game.nil?
     
