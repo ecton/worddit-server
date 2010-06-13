@@ -58,6 +58,12 @@ end
 class GameBoardRow < Hash
   include CouchRest::CastedModel
   
+  property :columns, :cast_as => ['GameBoardSquare']
+end
+
+class GameBoardSquare < Hash
+  include CouchRest::CastedModel
+
   property :tile, :cast_as => 'GameTile'
   property :special
 end

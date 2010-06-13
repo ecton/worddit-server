@@ -147,7 +147,20 @@ class Main
   end
   
   post "/game/new" do
-    
+    user = User.by_auth_token(:key => request.cookies['auth']).first
+    halt 403 if user.nil?
+    halt 400, "Invitations are required" unless params.has_key?(:invitations)
+    invitations = params[:invitations].split(",")
+    halt 400, "Must have at least one invitation" if invitations.size == 0
+    halt 400, "Only 4 people per game" if invitations.size > 3
+    game = create_game(params[:rules].split(','))
+    game.players = []
+    game.players << GamePlayer.new(:user_id => user.id, :status => "playing")
+    invitations.each do |user_id|
+      game.players << GamePlayer.new(:user_id => user_id, :status => "invited")
+    end
+    game.save
+    return game.id
   end
 
   post "/game/request" do
