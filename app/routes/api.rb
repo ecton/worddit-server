@@ -165,4 +165,32 @@ class Main
   get "/game/:id/rack" do
     
   end
+  
+  get "/game/:id/history/:limit" do
+    
+  end
+  
+  post "/game/:id/play" do
+    
+  end
+  
+  post "/game/:id/swap" do
+    
+  end
+  
+  post "/game/:id/pass" do
+    
+  end
+  
+  post "/game/:id/resign" do
+    
+  end
+  
+  get "/game/:id/chat/history/:limit" do
+    
+  end
+  
+  post "/game/:id/chat/send" do
+    
+  end
 end
