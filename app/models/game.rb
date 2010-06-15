@@ -38,36 +38,6 @@ class GameTile < Hash
   property :points
 end
 
-class GameMove < Hash
-  include CouchRest::CastedModel
-  
-  property :user_id
-  property :date
-  property :row
-  property :column
-  property :direction # right or down
-  property :tiles, :cast_as => ['GameTile']
-end
-
-class GameBoard < Hash
-  include CouchRest::CastedModel
-  
-  property :rows, :cast_as => ['GameBoardRow']
-end
-
-class GameBoardRow < Hash
-  include CouchRest::CastedModel
-  
-  property :columns, :cast_as => ['GameBoardSquare']
-end
-
-class GameBoardSquare < Hash
-  include CouchRest::CastedModel
-
-  property :tile, :cast_as => 'GameTile'
-  property :special
-end
-
 class GameMessage < Hash
   include CouchRest::CastedModel
   
