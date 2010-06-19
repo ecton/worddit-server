@@ -53,15 +53,15 @@ class Main
     end
   end
   
-  post "/user/setprofile" do
+  post "/api/user/setprofile" do
     # TODO
   end
   
-  post "/user/setavatar" do
+  post "/api/user/setavatar" do
     # TODO
   end
   
-  get "/user/games" do
+  get "/api/user/games" do
     user = User.by_auth_token(:key => request.cookies['auth']).first
     halt 403 if user.nil?
     
@@ -75,14 +75,14 @@ class Main
     }}.to_json
   end
   
-  get "/user/friends" do
+  get "/api/user/friends" do
     user = User.by_auth_token(:key => request.cookies['auth']).first
     halt 403 if user.nil?
     
     return user.friends.collect{|f| {:id => f.user_id, :status => f.status}}.to_json
   end
   
-  get "/user/find/:id_or_email" do
+  get "/api/user/find/:id_or_email" do
     user = User.by_auth_token(:key => request.cookies['auth']).first
     found_user = User.get(params[:id_or_email])
     found_user = User.by_email(params[:id_or_email].downcase).first if found_user.nil?
@@ -106,7 +106,7 @@ class Main
     end
   end
   
-  get "/user/:id/befriend" do
+  get "/api/user/:id/befriend" do
     user = User.by_auth_token(:key => request.cookies['auth']).first
     halt 403 if user.nil?
     found_user = User.get(params[:id])
@@ -130,7 +130,7 @@ class Main
         # or needs to be approved by the other person
   end
   
-  get "/user/:id/defriend" do
+  get "/api/user/:id/defriend" do
     user = User.by_auth_token(:key => request.cookies['auth']).first
     halt 403 if user.nil?
     found_user = User.get(params[:id])
@@ -142,7 +142,7 @@ class Main
     found_user.save
   end
   
-  get "/user/:id/acceptfriend" do
+  get "/api/user/:id/acceptfriend" do
     user = User.by_auth_token(:key => request.cookies['auth']).first
     halt 403 if user.nil?
     found_user = User.get(params[:id])
@@ -157,7 +157,7 @@ class Main
     end
   end
   
-  post "/game/new" do
+  post "/api/game/new" do
     user = User.by_auth_token(:key => request.cookies['auth']).first
     halt 403 if user.nil?
     halt 400, "Invitations are required" unless params.has_key?(:invitations)
@@ -174,47 +174,47 @@ class Main
     return game.id
   end
 
-  post "/game/request" do
+  post "/api/game/request" do
     # TODO
   end
   
-  get "/game/:id/accept" do
+  get "/api/game/:id/accept" do
     
   end
   
-  get "/game/:id/reject" do
+  get "/api/game/:id/reject" do
     
   end
   
-  get "/game/:id/board" do
+  get "/api/game/:id/board" do
     
   end
   
-  get "/game/:id/rack" do
+  get "/api/game/:id/rack" do
     
   end
   
-  get "/game/:id/history/:limit" do
+  get "/api/game/:id/history/:limit" do
     
   end
   
-  post "/game/:id/play" do
+  post "/api/game/:id/play" do
     
   end
   
-  post "/game/:id/swap" do
+  post "/api/game/:id/swap" do
     
   end
   
-  post "/game/:id/pass" do
+  post "/api/game/:id/pass" do
     
   end
   
-  post "/game/:id/resign" do
+  post "/api/game/:id/resign" do
     
   end
   
-  get "/game/:id/chat/history/:limit" do
+  get "/api/game/:id/chat/history/:limit" do
     user = User.by_auth_token(:key => request.cookies['auth']).first
     halt 403 if user.nil?
     
@@ -229,7 +229,7 @@ class Main
     return messages.to_json
   end
   
-  post "/game/:id/chat/send" do
+  post "/api/game/:id/chat/send" do
     user = User.by_auth_token(:key => request.cookies['auth']).first
     halt 403 if user.nil?
     game = Game.get(params[:id])

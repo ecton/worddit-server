@@ -18,6 +18,7 @@ namespace :api do
       p res
     end
   end
+  
   desc "Login as an existing user"
   task :user_login, [:email_address, :password, :client_type, :device_id] do |task, args|
     res = Net::HTTP.post_form(URI.parse("http://localhost:4567/api/user/login"),
