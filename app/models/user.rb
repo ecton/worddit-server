@@ -38,7 +38,7 @@ class User < CouchRest::ExtendedDocument
   end
 
   def check_password(password)
-    hash_password(password) == password_hash
+    User.hash_password(password) == password_hash
   end
   
   def setup_auth_token(client_type, device_id)
