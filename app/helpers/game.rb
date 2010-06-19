@@ -67,9 +67,9 @@ class Main
       end
       game.moves = []
       game.board = GameBoard.new(:rows => [])
-      (0...14).each do |idx1|
+      (0..14).each do |idx1|
         row = GameBoardRow.new(:columns => [])
-        (0...14).each do |idx2|
+        (0..14).each do |idx2|
           row.columns << GameBoardSquare.new(:special => DEFAULT_BOARD_SPECIALS[idx1][idx2])
         end
         game.board.rows << row
