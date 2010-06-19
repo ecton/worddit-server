@@ -108,6 +108,7 @@ class Main
   end
   
   get "/api/user/:id/befriend" do
+    p request.cookies
     user = User.by_auth_token(:key => request.cookies['auth']).first
     halt 403 if user.nil?
     found_user = User.get(params[:id])
@@ -159,13 +160,14 @@ class Main
   end
   
   post "/api/game/new" do
+    p params
     user = User.by_auth_token(:key => request.cookies['auth']).first
     halt 403 if user.nil?
-    halt 400, "Invitations are required" unless params.has_key?(:invitations)
+    halt 400, "Invitations are required" if params[:invitations].nil?
     invitations = params[:invitations].split(",")
     halt 400, "Must have at least one invitation" if invitations.size == 0
     halt 400, "Only 4 people per game" if invitations.size > 3
-    game = create_game(params[:rules].split(','))
+    game = create_game(params[:rules].to_s.split(','))
     game.players = []
     game.players << GamePlayer.new(:user_id => user.id, :status => "playing")
     invitations.each do |user_id|
