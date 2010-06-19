@@ -12,7 +12,8 @@ namespace :api do
     )
     case res
     when Net::HTTPSuccess
-      puts res['Set-Cookie']['auth']
+      jar = CGI::Cookie::parse(res['Set-Cookie'])
+      puts jar['auth'].value
     else
       p res
     end
