@@ -112,6 +112,7 @@ class Main
     halt 403 if user.nil?
     found_user = User.get(params[:id])
     halt 404 if found_user.nil?
+    halt 400 if found_user.id == user.id
     
     # Check for an existing friendship request
     freq = user.friends.find_all{|f| f.user_id == found_user.id}.first

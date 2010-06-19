@@ -1,0 +1,25 @@
+%html
+  %head
+    %title
+      = @page_name.nil? ? "" : @page_name + " - "
+      worddit
+  %body
+    - if @current_user
+      %a{:href => "/logout"} Logout
+    - else
+      %h3 Log In
+      %form{:action => "/login", :method => "post"}
+        %label Email Address:
+        %input{:type => "text", :name => "email"}
+        %label Password:
+        %input{:type => "password", :name => "password"}
+        %input{:type => "submit", :name => "login", :value => "Log In"}
+      %h3 Register
+      %form{:action => "/register", :method => "post"}
+        %label Email Address:
+        %input{:type => "text", :name => "email"}
+        %label Password:
+        %input{:type => "password", :name => "password"}
+        %label Verify Password:
+        %input{:type => "password", :name => "password"}
+        %input{:type => "submit", :name => "login", :value => "Log In"}

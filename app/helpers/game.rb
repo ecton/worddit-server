@@ -70,7 +70,7 @@ class Main
       (1...15).each do |idx1|
         row = GameBoardRow.new(:columns => [])
         (1...15).each do |idx2|
-          row.columns << GameBoardSquare.new(:special => GAME_BOARD_SPECIALS[idx1][idx2])
+          row.columns << GameBoardSquare.new(:special => DEFAULT_BOARD_SPECIALS[idx1][idx2])
         end
         game.board.rows << row
       end

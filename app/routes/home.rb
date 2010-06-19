@@ -1,5 +1,5 @@
 class Main
   get "/" do
-    erb :home
+    haml :home
   end
 end
