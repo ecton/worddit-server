@@ -28,13 +28,13 @@ class Main
   end
   
   post "/api/user/add" do
-    if params[:email] && params[:password] && params[:client_type] && params[:device_id]
+    unless params[:email].nil? || params[:password].nil? || params[:client_type].nil? || params[:device_id].nil?
       user = User.by_email(:key => params[:email].downcase).first
       halt 409, "Email already exists" unless user.nil?
       
       # Create the new account
       user = User.new()
-      user.email = params[:email]
+      user.email = params[:email].downcase
       user.password_hash = User.hash_password(params[:password])
       user.friends = []
       user.save
