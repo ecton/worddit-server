@@ -86,7 +86,7 @@ class Main
   get "/api/user/find/:id_or_email" do
     user = User.by_auth_token(:key => request.cookies['auth']).first
     found_user = User.get(params[:id_or_email])
-    found_user = User.by_email(params[:id_or_email].downcase).first if found_user.nil?
+    found_user = User.by_email(:key => params[:id_or_email].downcase).first if found_user.nil?
     halt 404 if found_user.nil?
     
     if !user.nil? && user.friends.any?{|f| f.user_id == found_user.id && f.status == 'active'}
