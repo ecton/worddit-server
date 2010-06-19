@@ -37,6 +37,7 @@ class Main
       user.email = params[:email]
       user.password_hash = User.hash_password(params[:password])
       user.friends = []
+      user.save
       
       token = user.setup_auth_token(params[:client_type], params[:device_id])
       set_cookie('auth', {
@@ -45,6 +46,7 @@ class Main
         :expires => Time.now + 30.days,
         :value => token
       })
+      user.save
       return ""
     else
       halt 400, "Required fields are missing"
