@@ -8,7 +8,7 @@ class Game < CouchRest::ExtendedDocument
   property :players, :cast_as => ['GamePlayer']
   property :tile_bag, :cast_as => ['GameTile']
   property :moves, :cast_as => ['GameMove']
-  property :board, :cast_as => ['GameBoard']
+  property :board, :cast_as => 'GameBoard'
   property :messages, :cast_as => ['GameMessage']
   
   view_by :user_id, {
