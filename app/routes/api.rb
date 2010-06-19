@@ -1,6 +1,6 @@
 class Main
   before do
-    if request.header['content-type'] == 'text/javascript'
+    if request.content_type == 'text/javascript'
       obj = JSON.parse(request.body.read)
       obj.each_pair do |key, value|
         params[key.to_sym] = value
