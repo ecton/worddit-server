@@ -1,4 +1,13 @@
 class Main
+  before do
+    if request.header['content-type'] == 'text/javascript'
+      obj = JSON.parse(request.body.read)
+      obj.each_pair do |key, value|
+        params[key.to_sym] = value
+      end
+    end
+  end
+    
   post "/api/user/login" do
     if params[:email] && params[:password] && params[:client_type] && params[:device_id]
       user = User.by_email(:key => params[:email].downcase).first
@@ -164,7 +173,7 @@ class Main
   end
 
   post "/game/request" do
-
+    # TODO
   end
   
   get "/game/:id/accept" do

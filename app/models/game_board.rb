@@ -3,9 +3,9 @@ class GameBoard < Hash
   
   property :rows, :cast_as => ['GameBoardRow']
 
-	def tile_at(row, column)
-		return @rows[row][column]
-	end
+  def tile_at(row, column)
+    return @rows[row][column]
+  end
 end
 
 class GameBoardRow < Hash
