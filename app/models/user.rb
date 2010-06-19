@@ -50,7 +50,7 @@ class User < CouchRest::ExtendedDocument
       auths << auth
     end
     
-    auth.authentication_token = id + Digest.SHA1.hexdigest((0...8).map{65.+(rand(25)).chr}.join + client_type + device_id)
+    auth.authentication_token = id + Digest::SHA1.hexdigest((0...8).map{65.+(rand(25)).chr}.join + client_type + device_id)
     auth.expire_date = Time.now + 30.days
     return auth.authentication_token
   end
