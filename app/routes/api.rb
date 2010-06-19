@@ -15,7 +15,7 @@ class Main
       halt 404, "User not found" unless user.check_password(params[:password])
       
       token = user.setup_auth_token(params[:client_type], params[:device_id])
-      set_cookie('auth', {
+      response.set_cookie('auth', {
         :httponly => true,
         :path => '/',
         :expires => Time.now + 1.day,
@@ -40,7 +40,7 @@ class Main
       user.save
       
       token = user.setup_auth_token(params[:client_type], params[:device_id])
-      set_cookie('auth', {
+      response.set_cookie('auth', {
         :httponly => true,
         :path => '/',
         :expires => Time.now + 30.days,
