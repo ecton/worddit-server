@@ -29,8 +29,8 @@ class User < CouchRest::ExtendedDocument
   }
   
   def fix_keys
-    email = email.downcase
-    nickname = nickname.downcase
+    self.email = self.email.to_s.downcase
+    self.nickname = self.nickname.to_s.downcase
   end
   
   def self.hash_password(password)
