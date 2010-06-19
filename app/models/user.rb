@@ -46,7 +46,7 @@ class User < CouchRest::ExtendedDocument
     auths ||= []
     auth = auths.find_all{|a| a.client_type == client_type && a.device_id == device_id}.first
     if auth.nil?
-      auth = UserAuthentication.new(:client_type => client_type, :device_id => device_d)
+      auth = UserAuthentication.new(:client_type => client_type, :device_id => device_id)
       auths << auth
     end
     
