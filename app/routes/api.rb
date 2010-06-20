@@ -245,6 +245,7 @@ class Main
     message.user_id = user.id
     message.date = Time.now
     message.message = params[:message]
+    game.messages ||= []
     game.messages << message
     game.save
   end
