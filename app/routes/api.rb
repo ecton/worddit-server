@@ -48,6 +48,7 @@ class Main
         :value => token
       })
       user.save
+      status 201
       return ""
     else
       halt 400, "Required fields are missing"
