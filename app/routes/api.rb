@@ -225,7 +225,7 @@ class Main
     halt 403 if user.nil?
     found_game = Game.get(params[:id])
     halt 404 if found_game.nil?
-    halt 400, "Game not in progress" if game.status != "inprogress"
+    halt 400, "Game not in progress" if found_game.status != "inprogress"
     
     player = found_game.players.find_all{|p| p.user_id == user.id}.first
     return player.rack.collect{|tile| {
