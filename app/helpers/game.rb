@@ -78,5 +78,15 @@ class Main
       return game
     end
     
+    def start_game(game)
+      game.players.each do |p|
+        p.rack ||= []
+        7.times do
+          p.rack << game.tile_bag.delete_at(rand(game.tile_bag.length))
+        end
+      end
+      
+      game.status = 'inprogress'
+    end
   end
 end

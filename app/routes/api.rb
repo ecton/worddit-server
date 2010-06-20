@@ -196,7 +196,7 @@ class Main
       greq.status = 'playing'
       pending_players = found_game.players.find_all{|p| p.status == "invited"}.first
       if pending_players.nil?
-        found_game.status = 'inprogress'
+        start_game(found_game)
       end
       found_game.save
     end
