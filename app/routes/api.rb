@@ -221,7 +221,17 @@ class Main
   end
   
   get "/api/game/:id/rack" do
+    user = User.by_auth_token(:key => request.cookies['auth']).first
+    halt 403 if user.nil?
+    found_game = Game.get(params[:id])
+    halt 404 if found_game.nil?
+    halt 400, "Game not in progress" if game.status != "inprogress"
     
+    player = found_game.players.find_all{|p| p.user_id == user.id}.first
+    return player.rack.collect{|tile| {
+      :letter => tile.letter,
+      :points => tile.points
+    }}.to_json
   end
   
   get "/api/game/:id/history/:limit" do
