@@ -176,6 +176,7 @@ class Main
       game.players << GamePlayer.new(:user_id => user_id, :status => "invited")
     end
     game.save
+    status 201
     return game.id
   end
 
