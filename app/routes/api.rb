@@ -192,14 +192,26 @@ class Main
     halt 400, "Not invited to this game" if greq.nil?
     if greq.status == "invited"
       greq.status = 'playing'
+      pending_players = found_game.players.find_all{|p| p.status == "invited"}.first
+      if pending_players.nil?
+        found_game.status = 'inprogress'
+      end
       found_game.save
     end
-    
-    # TODO: Need to check if all users are playing and if so, change the game status.
   end
   
   get "/api/game/:id/reject" do
+    user = User.by_auth_token(:key => request.cookies['auth']).first
+    halt 403 if user.nil?
+    found_game = Game.get(params[:id])
+    halt 404 if found_game.nil?
     
+    greq = found_game.players.reject!{|p| p.user_id == user.id && p.status == "invited"}
+    halt 400, "Not invited to this game" if greq.nil?
+    found_game.save
+    
+    # TODO: What should we do if this rejection causes the player count to drop below 2?
+    #       Should the game be deleted, marked as completed or perhaps a fourth status?
   end
   
   get "/api/game/:id/board" do
