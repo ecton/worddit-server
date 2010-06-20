@@ -42,7 +42,7 @@ class GameMessage < Hash
   include CouchRest::CastedModel
   
   property :user_id
-  property :date
+  property :date, :cast_as => Time
   property :message
 end
 

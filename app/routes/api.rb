@@ -183,7 +183,19 @@ class Main
   end
   
   get "/api/game/:id/accept" do
+    user = User.by_auth_token(:key => request.cookies['auth']).first
+    halt 403 if user.nil?
+    found_game = Game.get(params[:id])
+    halt 404 if found_game.nil?
     
+    greq = found_game.players.find_all{|p| p.user_id == user.id}.first
+    halt 400, "Not invited to this game" if greq.nil?
+    if greq.status == "invited"
+      greq.status = 'playing'
+      found_game.save
+    end
+    
+    # TODO: Need to check if all users are playing and if so, change the game status.
   end
   
   get "/api/game/:id/reject" do
