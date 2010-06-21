@@ -12,6 +12,7 @@ require "monk/glue"
 require "couchrest"
 require "json"
 require "active_support"
+require "set"
 
 class Main < Monk::Glue
   set :app_file, __FILE__

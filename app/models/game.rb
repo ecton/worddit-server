@@ -20,6 +20,18 @@ class Game < CouchRest::ExtendedDocument
       }
     }"
   }
+  
+  def start!()
+    self.players.each do |p|
+      p.rack ||= []
+      7.times do
+        p.rack << self.tile_bag.delete_at(rand(self.tile_bag.length))
+      end
+    end
+    
+    self.current_player_index = rand(self.players.length)
+    self.status = 'inprogress'
+  end
 end
 
 class GamePlayer < Hash

@@ -194,10 +194,7 @@ class Main
     halt 400, "Not invited to this game" if greq.nil?
     if greq.status == "invited"
       greq.status = 'playing'
-      pending_players = found_game.players.find_all{|p| p.status == "invited"}.first
-      if pending_players.nil?
-        start_game(found_game)
-      end
+      found_game.start! unless found_game.players.any?{|p| p.status == "invited"}
       found_game.save
     end
   end
@@ -228,6 +225,7 @@ class Main
     halt 400, "Game not in progress" if found_game.status != "inprogress"
     
     player = found_game.players.find_all{|p| p.user_id == user.id}.first
+    halt 400, "Not playing in this game" if player.nil?
     return player.rack.collect{|tile| {
       :letter => tile.letter,
       :points => tile.points
@@ -243,7 +241,28 @@ class Main
   end
   
   post "/api/game/:id/swap" do
+    unless params[:tiles].nil?
+      user = User.by_auth_token(:key => request.cookies['auth']).first
+      halt 403 if user.nil?
+      found_game = Game.get(params[:id])
+      halt 404 if found_game.nil?
+      halt 400, "Game not in progress" if found_game.status != "inprogress"
     
+      player = found_game.players.find_all{|p| p.user_id == user.id}.first
+      halt 400, "Not playing in this game" if player.nil?
+      halt 400, "Invalid move: not your turn" if found_game.players[found_game.current_player_index].user_id != player.user_id
+      passed_rack = JSON.parse(params[:tiles])
+      halt 400, "Invalid move: not your tile" unless passed_rack.to_set.subset?(player.rack.to_set)
+      passed_rack.each do |tile|
+        found_game.tile_bag << player.rack.delete(tile)
+        player.rack << found_game.tile_bag.delete_at(rand(found_game.tile_bag.length)) unless found_game.tile_bag.empty?
+      end
+      
+      found_game.current_player_index = (found_game.current_player_index + 1) % found_game.players.length
+      found_game.save
+    else
+      halt 400, "Required fields are missing"
+    end
   end
   
   post "/api/game/:id/pass" do
