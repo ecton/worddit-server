@@ -252,10 +252,9 @@ class Main
       halt 400, "Not playing in this game" if player.nil?
       halt 400, "Invalid move: not your turn" if found_game.players[found_game.current_player_index].user_id != player.user_id
       passed_rack = JSON.parse(params[:tiles])
-      rack_copy = Array.new(player.rack)
       passed_rack.each do |tile|
-        halt 400, "Invalid move: not your tile" if rack_copy.index(tile).nil? or rack_copy.delete_at(index(tile)).nil?
-        found_game.tile_bag << player.rack.delete_at(index(tile))
+        halt 400, "Invalid move: not your tile" if player.rack.index(tile).nil?
+        found_game.tile_bag << player.rack.delete_at(player.rack.index(tile))
         player.rack << found_game.tile_bag.delete_at(rand(found_game.tile_bag.length)) unless found_game.tile_bag.empty?
       end
       
