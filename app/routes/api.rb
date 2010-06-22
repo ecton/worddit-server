@@ -281,7 +281,22 @@ class Main
   end
   
   post "/api/game/:id/resign" do
+    user = User.by_auth_token(:key => request.cookies['auth']).first
+    halt 403 if user.nil?
+    found_game = Game.get(params[:id])
+    halt 404 if found_game.nil?
+    halt 400, "Game not in progress" if found_game.status != "inprogress"
+  
+    player = found_game.players.find_all{|p| p.user_id == user.id}.first
+    halt 400, "Not playing in this game" if player.nil?
+    found_game.tile_bag += player.rack
+    if found_game.players[found_game.current_player_index].user_id == player.user_id
+      found_game.current_player_index = (found_game.current_player_index + 1) % found_game.players.length
+    end
+    found_game.players.delete_at(found_game.players.index(player))
+    found_game.save
     
+    # TODO: What should we do if this player resigning brings the count below 2?
   end
   
   get "/api/game/:id/chat/history/:limit" do
