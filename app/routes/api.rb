@@ -73,7 +73,7 @@ class Main
       :status => game.players.find_all{|p| p.user_id == user.id}.first.status,
       :current_player => game.current_player_index,
       :players => game.players.collect{|p| {:id => p.user_id, :score => p.score}},
-      :last_move_utc => game.moves.last.date
+      :last_move_utc => game.moves.last.nil? ? nil : game.moves.last.date
     }}.to_json
   end
   
@@ -214,7 +214,7 @@ class Main
   end
   
   get "/api/game/:id/board" do
-    
+    # TODO
   end
   
   get "/api/game/:id/rack" do
@@ -233,11 +233,11 @@ class Main
   end
   
   get "/api/game/:id/history/:limit" do
-    
+    # TODO
   end
   
   post "/api/game/:id/play" do
-    
+    # TODO
   end
   
   post "/api/game/:id/swap" do
