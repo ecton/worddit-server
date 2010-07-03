@@ -9,7 +9,7 @@ class GameMove < Hash
   property :direction # right or down
   property :tiles, :cast_as => ['GameTile']
 
-  def is_valid?(gameboard)
+  def is_valid?(gameboard, ignore_dict=false)
     valid = false
     # In order to be valid, it only needs to touch another piece on the board.
     # However, a player could try to bluff with a word, so the dict doesn't
@@ -17,7 +17,7 @@ class GameMove < Hash
     return valid
   end
 
-  def score(gameboard, ignore_dict=false)
+  def score(gameboard)
     score = 0
     # use_dict is available because the player may be bluffing.  
     # If that's the case, the hand needs to be scored regardless of
