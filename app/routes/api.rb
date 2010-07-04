@@ -4,7 +4,7 @@ class Main
       obj = JSON.parse(request.body.read)
       obj.each_pair do |key, value|
         params[key.to_sym] = value
-      end
+       end
     end
   end
     
@@ -22,7 +22,7 @@ class Main
         :expires => Time.now + 1.day,
         :value => token
       })
-      return ""
+      return
     else
       halt 400, "Required fields are missing"
     end
@@ -49,7 +49,7 @@ class Main
       })
       user.save
       status 201
-      return ""
+      return
     else
       halt 400, "Required fields are missing"
     end
@@ -73,7 +73,7 @@ class Main
       :status => game.players.find_all{|p| p.user_id == user.id}.first.status,
       :current_player => game.current_player_index,
       :players => game.players.collect{|p| {:id => p.user_id, :score => p.score}},
-      :last_move_utc => game.moves.last.date
+      :last_move_utc => game.moves.last.nil? ? nil : game.moves.last.date
     }}.to_json
   end
   
@@ -132,6 +132,8 @@ class Main
       found_user.save
     end # otherwise, the request was already made and is either approved, 
         # or needs to be approved by the other person
+    
+    return
   end
   
   get "/api/user/:id/defriend" do
@@ -144,6 +146,8 @@ class Main
     found_user.friends.reject!{|f| f.user_id == user.id}
     user.save
     found_user.save
+    
+    return
   end
   
   get "/api/user/:id/acceptfriend" do
@@ -159,6 +163,8 @@ class Main
       user.save
       found_user.save
     end
+    
+    return
   end
   
   post "/api/game/new" do
@@ -171,7 +177,7 @@ class Main
     halt 400, "Only 4 people per game" if invitations.size > 3
     game = create_game(params[:rules].to_s.split(','))
     game.players = []
-    game.players << GamePlayer.new(:user_id => user.id, :status => "playing")
+    game.players << GamePlayer.new(:user_id => user.id, :status => "playing", :score => 0)
     invitations.each do |user_id|
       game.players << GamePlayer.new(:user_id => user_id, :status => "invited")
     end
@@ -190,13 +196,16 @@ class Main
     found_game = Game.get(params[:id])
     halt 404 if found_game.nil?
     
-    greq = found_game.players.find_all{|p| p.user_id == user.id}.first
-    halt 400, "Not invited to this game" if greq.nil?
-    if greq.status == "invited"
-      greq.status = 'playing'
+    preq = found_game.players.find_all{|p| p.user_id == user.id}.first
+    halt 400, "Not invited to this game" if preq.nil?
+    if preq.status == "invited"
+      preq.status = 'playing'
+      preq.score = 0
       found_game.start! unless found_game.players.any?{|p| p.status == "invited"}
       found_game.save
     end
+    
+    return
   end
   
   get "/api/game/:id/reject" do
@@ -205,16 +214,18 @@ class Main
     found_game = Game.get(params[:id])
     halt 404 if found_game.nil?
     
-    greq = found_game.players.reject!{|p| p.user_id == user.id && p.status == "invited"}
-    halt 400, "Not invited to this game" if greq.nil?
+    preq = found_game.players.reject!{|p| p.user_id == user.id && p.status == "invited"}
+    halt 400, "Not invited to this game" if preq.nil?
     found_game.save
+    
+    return
     
     # TODO: What should we do if this rejection causes the player count to drop below 2?
     #       Should the game be deleted, marked as completed or perhaps a fourth status?
   end
   
   get "/api/game/:id/board" do
-    
+    # TODO
   end
   
   get "/api/game/:id/rack" do
@@ -226,18 +237,65 @@ class Main
     
     player = found_game.players.find_all{|p| p.user_id == user.id}.first
     halt 400, "Not playing in this game" if player.nil?
-    return player.rack.collect{|tile| {
-      :letter => tile.letter,
-      :points => tile.points
-    }}.to_json
+    
+    return player.rack.to_json
   end
   
   get "/api/game/:id/history/:limit" do
-    
+    # TODO
   end
   
   post "/api/game/:id/play" do
-    
+    unless params[:row].nil? || params[:column].nil? || params[:direction].nil? || params[:tiles].nil?
+      user = User.by_auth_token(:key => request.cookies['auth']).first
+      halt 403 if user.nil?
+      found_game = Game.get(params[:id])
+      halt 404 if found_game.nil?
+      halt 400, "Game not in progress" if found_game.status != "inprogress"
+      
+      player = found_game.players.find_all{|p| p.user_id == user.id}.first
+      halt 400, "Not playing in this game" if player.nil?
+      halt 400, "Invalid move: not your turn" if found_game.players[found_game.current_player_index].user_id != player.user_id
+      
+      move = GameMove.new()
+      move.user_id = user.id
+      move.date = Time.now
+      move.row = params[:row]
+      move.column = params[:column]
+      move.direction = params[:direction]
+      move.tiles ||= []
+      passed_rack = JSON.parse(params[:tiles])
+      passed_rack.each do |tile|
+        halt 400, "Invalid move: not your tile" if player.rack.index(tile).nil?
+        move.tiles << player.rack.delete_at(player.rack.index(tile))
+      end
+      
+      unless move.is_valid?(found_game)
+        move.tiles.each do |tile|
+          player.rack << move.tiles.delete_at(move.tiles.index(tile))
+        end
+        halt 400, "Invalid move"
+      end
+      
+      move.tiles.length.times do
+        player.rack << found_game.tile_bag.delete_at(rand(found_game.tile_bag.length)) unless found_game.tile_bag.empty?
+      end # Consider moving found_game.tile_bag.empty? check outside of loop to short-circuit the loop.
+      
+      player.score += move.score(found_game)
+      found_game.moves ||= []
+      found_game.moves << move
+      # Need some sort of delay/hook/interrupt/whatever to allow for challenges before player is advanced.
+      found_game.current_player_index = (found_game.current_player_index + 1) % found_game.players.length
+      found_game.save
+      
+      return {
+        :points => player.score,
+        :primary_word => "YAHTZEE", # TODO: Replace with actual primary word.
+        :tiles => player.rack
+      }.to_json
+    else
+      halt 400, "Required fields are missing"
+    end
   end
   
   post "/api/game/:id/swap" do
@@ -260,6 +318,8 @@ class Main
       
       found_game.current_player_index = (found_game.current_player_index + 1) % found_game.players.length
       found_game.save
+      
+      return player.rack.to_json
     else
       halt 400, "Required fields are missing"
     end
@@ -278,6 +338,8 @@ class Main
     
     found_game.current_player_index = (found_game.current_player_index + 1) % found_game.players.length
     found_game.save
+    
+    return
   end
   
   post "/api/game/:id/resign" do
@@ -295,6 +357,8 @@ class Main
     end
     found_game.players.delete_at(found_game.players.index(player))
     found_game.save
+    
+    return
     
     # TODO: What should we do if this player resigning brings the count below 2?
   end
@@ -329,5 +393,7 @@ class Main
     game.messages ||= []
     game.messages << message
     game.save
+    
+    return
   end
 end
