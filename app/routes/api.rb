@@ -4,7 +4,7 @@ class Main
       obj = JSON.parse(request.body.read)
       obj.each_pair do |key, value|
         params[key.to_sym] = value
-       end
+      end
     end
   end
     
@@ -242,7 +242,18 @@ class Main
   end
   
   get "/api/game/:id/history/:limit" do
-    # TODO
+    user = User.by_auth_token(:key => request.cookies['auth']).first
+    halt 403 if user.nil?
+    
+    game = Game.get(params[:id])
+    halt 404 if game.nil?
+    
+    halt 403 unless game.players.any?{|p| p.user_id == user.id}
+    
+    date = Time.parse(params[:limit]) unless params[:limit] == 'all'
+    moves = game.moves
+    moves = moves.reject{|m| m.date < date} unless date.nil?
+    return moves.to_json
   end
   
   post "/api/game/:id/play" do
