@@ -21,6 +21,14 @@ class Game < CouchRest::ExtendedDocument
     }"
   }
   
+  view_by :creation_date, {
+    :map => "function(doc) {
+      if (doc['couchrest-type'] == 'Game') {
+        emit(doc['created_at'], null);
+      }
+    }"
+  }
+  
   def start!()
     self.players.each do |p|
       p.rack ||= []

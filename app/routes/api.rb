@@ -35,6 +35,7 @@ class Main
       
       # Create the new account
       user = User.new()
+      # From http://tfletcher.com/lib/rfc822.rb
       EmailAddress = begin
         qtext = '[^\\x0d\\x22\\x5c\\x80-\\xff]'
         dtext = '[^\\x0d\\x5b-\\x5d\\x80-\\xff]'
