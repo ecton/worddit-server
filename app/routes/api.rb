@@ -88,7 +88,7 @@ class Main
     games = Game.by_user_id(:key => user.id)
     return games.collect{|game| {
       :id => game.id,
-      :status => game.players.find_all{|p| p.user_id == user.id}.first.status,
+      :status => game.status,
       :current_player => game.current_player_index,
       :players => game.players.collect{|p| {:id => p.user_id, :score => p.score}},
       :last_move_utc => game.moves.last.nil? ? nil : game.moves.last.date
