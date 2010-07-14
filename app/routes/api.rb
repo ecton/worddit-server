@@ -85,14 +85,7 @@ class Main
     user = User.by_auth_token(:key => request.cookies['auth']).first
     halt 403 if user.nil?
     
-    games = Game.by_user_id(:key => user.id)
-    return games.collect{|game| {
-      :id => game.id,
-      :status => game.status,
-      :current_player => game.current_player_index,
-      :players => game.players.collect{|p| {:id => p.user_id, :score => p.score}},
-      :last_move_utc => game.moves.last.nil? ? nil : game.moves.last.date
-    }}.to_json
+    return Game.by_user_id(:key => user.id).to_json
   end
   
   get "/api/user/friends" do
