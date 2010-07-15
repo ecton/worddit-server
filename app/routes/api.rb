@@ -100,13 +100,7 @@ class Main
     user = User.by_auth_token(:key => request.cookies['auth']).first
     halt 403 if user.nil?
     
-    return user.friends.sort{|f1, f2|
-      return -1 if f1.status == 'active' && f2.status == 'requested'
-      return -1 if f1.status == 'pending' && ['active', 'requested'].include?(f2.status)
-      return 0 if f1.status == f2.status
-      return 1 if f1.status == 'requested' && ['active', 'pending'].include?(f2.status)
-      return 1 if f1.status == 'active' && f2.status == 'pending'
-    }.collect{|f|
+    return user.friends.collect{|f|
       u = User.get(f.user_id)
       {:id => f.user_id, :email => u.email, :nickname => u.nickname, :avatar => u.avatar_url, :status => f.status}
     }.to_json
