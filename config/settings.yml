@@ -2,15 +2,15 @@ defaults: &defaults
  
 :development:
   :couchdb:
-    :url: http://localhost:5984/worddit_dev
+    :url: http://couch.dev.worddit.org/worddit_dev
   <<: *defaults
   
 :test:
   :couchdb:
-    :url: http://localhost:5984/worddit_test
+    :url: http://couch.dev.worddit.org/worddit_test
     <<: *defaults
 
 :production:
   :couchdb:
-    :url: http://localhost:5984/worddit
+    :url: http://couch.dev.worddit.org/worddit
     <<: *defaults

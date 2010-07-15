@@ -99,7 +99,10 @@ class Main
     user = User.by_auth_token(:key => request.cookies['auth']).first
     halt 403 if user.nil?
     
-    return user.friends.collect{|f| {:id => f.user_id, :status => f.status}}.to_json
+    return user.friends.collect{|f|
+      u = User.get(f.user_id)
+      {:id => f.user_id, :email => u.email, :nickname => u.nickname, :avatar => u.avatar_url, :status => f.status}
+    }.to_json
   end
   
   get "/api/user/find/:id_or_email" do
