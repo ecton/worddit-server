@@ -180,7 +180,7 @@ class Main
     
     freq = user.friends.find_all{|f| f.user_id == found_user.id}.first
     if !freq.nil? && freq.status == "requested"
-      freq.status = 'approved'
+      freq.status = 'active'
       found_user.friends.find_all{|f| f.user_id == user.id}.first.status = "active"
       user.save
       found_user.save
