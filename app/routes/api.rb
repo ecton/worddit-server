@@ -103,7 +103,13 @@ class Main
     return user.friends.collect{|f|
       u = User.get(f.user_id)
       {:id => f.user_id, :email => u.email, :nickname => u.nickname, :avatar => u.avatar_url, :status => f.status}
-    }.to_json
+      }.sort{|f1, f2|
+        return -1 if f1.status == 'active' && f2.status == 'requested'
+        return -1 if f1.status == 'pending' && ['active', 'requested'].include(f2.status)
+        return 0 if f1.status == f2.status
+        return 1 if f1.status == 'requested' && ['active', 'pending'].include(f2.status)
+        return 1 if f1.status == 'active' && f2.status == 'pending'
+      }.to_json
   end
   
   get "/api/user/find/:id_or_email" do
