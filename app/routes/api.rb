@@ -120,19 +120,28 @@ class Main
     
     if !user.nil? && user.friends.any?{|f| f.user_id == found_user.id && f.status == 'active'}
       # These users are friends, reveal the entire profile
-      return {
+      result = {
+        :id => found_user.id,
+        :email => found_user.email,
+        :nickname => found_user.nickname,
+        :avatar_url => found_user.avatar_url,
+        :status => 'active'
+      }
+      
+      return result.to_json
+    else
+      # These users aren't connected, only reveal public information
+      result = {
         :id => found_user.id,
         :email => found_user.email,
         :nickname => found_user.nickname,
         :avatar_url => found_user.avatar_url
-      }.to_json
-    else
-      # These users aren't connected, only reveal public information
-      return {
-        :id => found_user.id,
-        :nickname => found_user.nickname,
-        :avatar_url => found_user.avatar_url
-      }.to_json
+      }
+      
+      status = user.friends.find_all{|f| f.user_id == found_user.id}.first
+      result[:status] = status unless status.nil?
+      
+      return result.to_json
     end
   end
   
