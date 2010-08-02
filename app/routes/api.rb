@@ -135,7 +135,7 @@ class Main
         :avatar_url => found_user.avatar_url
       }
       
-      status = user.friends.find_all{|f| f.user_id == found_user.id}.first
+      status = user.friends.find_all{|f| f.user_id == found_user.id}.collect{|f| f.status}.first
       result[:status] = status unless status.nil?
       p result
       return result.to_json
