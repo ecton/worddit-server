@@ -124,6 +124,7 @@ class Main
         :status => 'active'
       }
       
+      p result
       return result.to_json
     else
       # These users aren't connected, only reveal public information
@@ -136,7 +137,7 @@ class Main
       
       status = user.friends.find_all{|f| f.user_id == found_user.id}.first
       result[:status] = status unless status.nil?
-      
+      p result
       return result.to_json
     end
   end
