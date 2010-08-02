@@ -100,13 +100,7 @@ class Main
     user = User.by_auth_token(:key => request.cookies['auth']).first
     halt 403 if user.nil?
     
-    return user.friends.sort{|f1, f2|
-      -1 if f1.status == 'active' && f2.status == 'requested'
-      -1 if f1.status == 'pending' && ['active', 'requested'].include?(f2.status)
-      0 if f1.status == f2.status
-      1 if f1.status == 'requested' && ['active', 'pending'].include?(f2.status)
-      1 if f1.status == 'active' && f2.status == 'pending'
-    }.collect{|f| {:friend => f, :user => User.get(f.user_id)}}.collect{|f|
+    return user.friends.sort.collect{|f| {:friend => f, :user => User.get(f.user_id)}}.collect{|f|
       # Todo: email shouldn't be handed out if the friendship isn't accepted
       {:id => f[:friend].user_id, :email => f[:user].email, :nickname => f[:user].nickname, :avatar => f[:user].avatar_url, :status => f[:friend].status}
     }.to_json

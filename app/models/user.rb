@@ -68,6 +68,15 @@ end
 class UserFriend < Hash
   include CouchRest::CastedModel
   
+  def <=>(other)
+    return -1 if self.status == 'active' && other.status == 'requested'
+    return -1 if self.status == 'pending' && ['active', 'requested'].include?(other.status)
+    return 0 if self.status == other.status
+    return 1 if self.status == 'requested' && ['active', 'pending'].include?(other.status)
+    return 1 if self.status == 'active' && other.status == 'pending'
+    return 1
+  end
+  
   property :user_id
   property :status # requested, pending, active
 end
