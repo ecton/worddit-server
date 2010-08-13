@@ -22,7 +22,7 @@ class Main
         :expires => Time.now + 1.day,
         :value => token
       })
-      return
+      return user.to_json
     else
       halt 400, "Required fields are missing"
     end
@@ -67,7 +67,7 @@ class Main
       })
       user.save
       status 201
-      return
+      return user.to_json
     else
       halt 400, "Required fields are missing"
     end
