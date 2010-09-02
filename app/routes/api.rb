@@ -22,7 +22,16 @@ class Main
         :expires => Time.now + 1.day,
         :value => token
       })
-      return user.to_json
+
+      # Construct an object which looks like the client.
+      result = {
+        :id => user.id,
+        :email => user.email,
+        :nickname => user.nickname,
+        :avatar_url => user.avatar_url
+      }
+
+      return result.to_json
     else
       halt 400, "Required fields are missing"
     end
@@ -67,7 +76,16 @@ class Main
       })
       user.save
       status 201
-      return user.to_json
+
+      # Construct an object which looks like the client.
+      result = {
+        :id => user.id,
+        :email => user.email,
+        :nickname => user.nickname,
+        :avatar_url => user.avatar_url
+      }
+
+      return result.to_json
     else
       halt 400, "Required fields are missing"
     end
